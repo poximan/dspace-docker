@@ -3,3 +3,7 @@ services:
 
   dspace:
     build: ./img-dspace/
+    #volumes:
+    #  - ./img-dspace/conf/:/opt/tomcat/conf/
+    ports: # huesped:anfitrion
+      - "80:80"
