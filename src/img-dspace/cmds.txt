@@ -1,0 +1,3 @@
+docker build -t img-dspace .
+docker run --name cont-dspace -p 80:80 img-dspace
+docker start cont-dspace
