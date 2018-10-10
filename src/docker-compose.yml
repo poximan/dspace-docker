@@ -1,9 +1,28 @@
-version: '2'
+version: '3.1'
+
 services:
 
-  dspace:
+  # postgres/postgres para user/password
+  db:
+    build: ./img-db/
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: dspaceunpsjb
+
+  adminer:
+    image: adminer
+    restart: always
+    # puertos anfitrion:huesped
+    ports:
+      - 8080:8080
+
+  rdi:
     build: ./img-dspace/
-    #volumes:
-    #  - ./img-dspace/conf/:/opt/tomcat/conf/
-    ports: # huesped:anfitrion
-      - "80:80"
+    restart: always
+    # puertos anfitrion:huesped
+    ports:
+      - 8081:8080
+    depends_on:
+      - db
