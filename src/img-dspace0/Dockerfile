@@ -1,32 +1,20 @@
-FROM openjdk:8-jdk
+FROM tomcat:8.5.34-jre11
 MAINTAINER <donatohugo13@gmail.com>
-
-# ..........................
-# instalar tomcat
-# ..........................
-WORKDIR /home
-RUN wget http://www-us.apache.org/dist/tomcat/tomcat-8/v8.5.34/bin/apache-tomcat-8.5.34.zip
-RUN apt-get install -y unzip
-RUN unzip apache-tomcat-8.5.34.zip
-RUN mv apache-tomcat-8.5.34 /opt/tomcat
 
 # ..........................
 # config tomcat
 # ..........................
-WORKDIR /opt/tomcat
-RUN chmod +x bin/*
-
-COPY ./tomcat/conf /opt/tomcat/conf
-
 ENV CATALINA_OPTS -Xms512M -Xmx1900M -server -XX:+UseParallelGC
 ENV CATALINA_PID /usr/local/tomcat/temp/tomcat.pid
 
-CMD ["/opt/tomcat/bin/startup.sh"]
+COPY ./tomcat/conf /usr/local/tomcat/conf
+
+WORKDIR /usr/local/tomcat
+RUN chmod +x bin/*
 
 # ..........................
 # instalar maven
 # ..........................
-WORKDIR /home
 RUN apt-get update -qq \
     && apt-get install -y maven \
     && rm -rf /var/cache/apt/*
@@ -39,6 +27,7 @@ RUN apt-get install -y ant
 # ..........................
 # instalar dspace
 # ..........................
+WORKDIR /home
 RUN useradd udspace
 RUN apt-get install -y git-core
 
@@ -51,8 +40,5 @@ RUN chown -R udspace:udspace DSpace-source-code
 # compilar dspace
 # ..........................
 WORKDIR /home/udspace/DSpace-source-code
-RUN chown -R udspace:udspace /home/udspace
-
-USER udspace
-RUN mkdir -p /home/udspace/.m2/repository
+RUN cd /home/udspace/DSpace-source-code
 RUN mvn clean package -Dmirage2.on=true
